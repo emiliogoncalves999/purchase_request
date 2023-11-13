@@ -112,7 +112,7 @@ def editrequestpurchase(request, id):
 
 
 
-def detallupurchaserequest(request, id):
+def detallupurchaserequest(request,id):
     id = decrypt_id(id)
     purchaserequest = RequestOrder.objects.get(id=id)
     itempurchaserequest = ItemRequest.objects.filter(request_order=id)
@@ -145,7 +145,6 @@ def sendpurchaserequest(request, id):
 
     unique_group_names = RequestSet.objects.filter(category__name='purchase_request',level__name='jeral')
 
-    print(unique_group_names)
     for group_name in unique_group_names.iterator():
         contract = Contract.objects.get(employeeuser__user__groups__name=group_name.group.name, employeeuser__user__is_active=True)
 

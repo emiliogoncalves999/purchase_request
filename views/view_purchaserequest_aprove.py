@@ -47,7 +47,8 @@ def aceptedpurchaserequest(request, id):
 
     iddecript = decrypt_id(id)
     dados = RequestOrderAprove.objects.get(id=iddecript)
-
+    idrequest = RequestOrder.objects.get(id = dados.request_order.id)
+    idrequest2 =  encrypt_id(str(idrequest.id))
 
     if request.method == 'POST':
         form = RequestOrderAproveForm(request.POST, instance = dados )
@@ -56,10 +57,10 @@ def aceptedpurchaserequest(request, id):
             instance.status = "Acepted"
             instance.save()
             messages.success(request, 'Rejeita ho susesu')  # Success message
-            return redirect('purchase_request:detallupurchaserequest', id = id )
+            return redirect('purchase_request:detallupurchaserequest', id = idrequest2)
         else:
             messages.success(request, 'Rejeita ho susesu')  # Success message
-            return redirect('purchase_request:detallupurchaserequest', id = id )
+            return redirect('purchase_request:detallupurchaserequest', id = idrequest2)
 
 
     context = {
@@ -78,6 +79,9 @@ def rijectedpurchaserequest(request, id):
     form = RequestOrderAproveForm()
     iddecript = decrypt_id(id)
     dados = RequestOrderAprove.objects.get(id=iddecript)
+    idrequest = RequestOrder.objects.get(id = dados.request_order.id)
+    idrequest2 =  encrypt_id(str(idrequest.id))
+
 
 
     if request.method == 'POST':
@@ -87,10 +91,10 @@ def rijectedpurchaserequest(request, id):
             instance.status = "Rejected"
             instance.save()
             messages.success(request, 'Rejeita ho susesu')  # Success message
-            return redirect('purchase_request:detallupurchaserequest', id = id )
+            return redirect('purchase_request:detallupurchaserequest', id = idrequest2)
         else:
             messages.success(request, 'Rejeita ho susesu')  # Success message
-            return redirect('purchase_request:detallupurchaserequest', id = id )
+            return redirect('purchase_request:detallupurchaserequest', id = idrequest2)
 
 
     context = {
