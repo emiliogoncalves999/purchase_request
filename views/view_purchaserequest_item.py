@@ -19,7 +19,7 @@ from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login, logout
 from rekrutamentu.forms import FileUploadForm
-from travel.models import *
+from purchase_request.models import *
 from custom.models import RequestSet
 
 from settingapps.utils import  decrypt_id, encrypt_id
@@ -46,7 +46,7 @@ from django.core.exceptions import ObjectDoesNotExist
 def additempurchase(request,id_riquest):
     encript_id_riquest = id_riquest
     id_riquest = decrypt_id(id_riquest)
-    travelautorization = TravelAutorization.objects.get(id=id_riquest)
+    requestorder = RequestOrder.objects.get(id=id_riquest)
 
     form = ItemRequestForm()
 
@@ -54,7 +54,7 @@ def additempurchase(request,id_riquest):
         form = ItemRequestForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.travel_autorization = travelautorization
+            instance.request_order = requestorder
             instance.status = "Pendente"
             instance.save()
             messages.success(request, 'Request created successfully.')  # Success message
@@ -65,9 +65,9 @@ def additempurchase(request,id_riquest):
 
     context = {
         "form" : form,
-        "pajina_travel" : "active",
+        "pajina_purchase_request" : "active",
             }
-    return render(request, 'travel/request_purchaserequest.html',context)
+    return render(request, 'purchase_request/request_purchaserequest.html',context)
 
 
 
@@ -96,7 +96,7 @@ def edititempurchase(request,id_item):
         "form" : form,
         "pajina_purchase_request" : "active",
             }
-    return render(request, 'purchase_request/request_purchaserequestrequest.html',context)
+    return render(request, 'purchase_request/request_purchaserequest.html',context)
 
 
 def apagaitempurchase(request, id_item):

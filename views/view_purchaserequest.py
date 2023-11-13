@@ -40,6 +40,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 
 def listapurchaserequest(request):
+    # dadospr = RequestOrder.objects.filter(contract__id = request.contract.id).order_by('-id')
     dadospr = RequestOrder.objects.all().order_by('-id')
     context = {
         "dadospr" : dadospr ,
@@ -53,15 +54,12 @@ def listapurchaserequest(request):
 
 
 def requestpurchase(request):
-    employe = EmployeeUser.objects.get(user=request.user.id, user__is_active = True)
     form = RequestOrderForm()
-
-
     if request.method == 'POST':
         form = RequestOrderForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.employee = Employee.objects.filter(id=employe.id).last()
+            instance.contract = request.contract
             instance.created_by = User.objects.get(id=request.user.id) 
             instance.save()
             messages.success(request, 'Request created successfully.')  # Success message
@@ -120,7 +118,7 @@ def detallupurchaserequest(request, id):
     itempurchaserequest = ItemRequest.objects.filter(request_order=id)
 
     timeline = RequestOrderAprove.objects.filter(request_order=id)
-
+    print(timeline)
 
     context = {
 
@@ -144,30 +142,36 @@ def sendpurchaserequest(request, id):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-    unique_group_names = RequestSet.objects.filter(category__name='purchase_request').values('group__name').distinct()
-    for group_name in unique_group_names:
-        group_users = User.objects.filter(groups__name=group_name['group__name'], is_active=True)
-        for user in group_users:
 
-            employedata = EmployeeUser.objects.filter(user=user.id).last()
+    unique_group_names = RequestSet.objects.filter(category__name='purchase_request',level__name='jeral')
 
-            addtimeline = RequestOrderAprove()
-            addtimeline.request_order = RequestOrder.objects.get(id=id)
-            addtimeline.employeeuser = employedata
-            addtimeline.status = "Review"
-            addtimeline.created_by = request.user
-            try:
-                addtimeline.save()
-            except Exception as e:
-                logger.error(f"Error saving RequestOrderAprove: {str(e)}")
+    print(unique_group_names)
+    for group_name in unique_group_names.iterator():
+        contract = Contract.objects.get(employeeuser__user__groups__name=group_name.group.name, employeeuser__user__is_active=True)
+
+    
+        addtimeline = RequestOrderAprove()
+        addtimeline.request_order = RequestOrder.objects.get(id=id)
+        addtimeline.contract = contract
+        addtimeline.status = "Review"
+        addtimeline.created_by = request.user
 
 
+        try:
+            addtimeline.save()
+
+        except Exception as e:
+            print(e)
+            messages.success(request, 'Falhansu teknika favor manda fali')  
+            return redirect('purchase_request:listapurchaserequest')
 
 
     requestorder = RequestOrder.objects.get(id=id)
     requestorder.is_draft = False
     requestorder.save()
     messages.success(request, 'Pedidu Prossesa ona')  
+
+
     return redirect('purchase_request:listapurchaserequest')
 
 

@@ -21,7 +21,7 @@ from django.contrib.auth import authenticate, login, logout
 from rekrutamentu.forms import FileUploadForm
 from purchase_request.models import *
 from custom.models import RequestSet
-
+from purchase_request.forms import RequestOrderAproveForm
 from settingapps.utils import  decrypt_id, encrypt_id
 from django.core.paginator import Paginator
 
@@ -42,23 +42,66 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 def aceptedpurchaserequest(request, id):
-    id = decrypt_id(id)
-    itemprosses = RequestOrderAprove.objects.get(id=id)
-    id_request = encrypt_id(str(itemprosses.request_order.id))
-    item = itemprosses
-    item.status = "Acepted"
-    item.save()
-    return redirect('purchase_request:detallupurchaserequest', id = id_request )
+    form = RequestOrderAproveForm()
+
+
+    iddecript = decrypt_id(id)
+    dados = RequestOrderAprove.objects.get(id=iddecript)
+
+
+    if request.method == 'POST':
+        form = RequestOrderAproveForm(request.POST, instance = dados )
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.status = "Acepted"
+            instance.save()
+            messages.success(request, 'Rejeita ho susesu')  # Success message
+            return redirect('purchase_request:detallupurchaserequest', id = id )
+        else:
+            messages.success(request, 'Rejeita ho susesu')  # Success message
+            return redirect('purchase_request:detallupurchaserequest', id = id )
+
+
+    context = {
+        "form" : form,
+        "asaun" : "aceita",
+        "dados" : dados ,
+        "pajina_purchase_request" : "active",
+            }
+    return render(request, 'purchase_request/purchase_request__actiondescription.html',context)
 
 
 def rijectedpurchaserequest(request, id):
-    id = decrypt_id(id)
-    itemprosses = RequestOrderAprove.objects.get(id=id)
-    id_request = encrypt_id(str(itemprosses.request_order.id))
-    item = itemprosses
-    item.status = "Rejected"
-    item.save()
-    return redirect('purchase_request:detallupurchaserequest', id = id_request )
+
+
+
+    form = RequestOrderAproveForm()
+    iddecript = decrypt_id(id)
+    dados = RequestOrderAprove.objects.get(id=iddecript)
+
+
+    if request.method == 'POST':
+        form = RequestOrderAproveForm(request.POST, instance = dados )
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.status = "Rejected"
+            instance.save()
+            messages.success(request, 'Rejeita ho susesu')  # Success message
+            return redirect('purchase_request:detallupurchaserequest', id = id )
+        else:
+            messages.success(request, 'Rejeita ho susesu')  # Success message
+            return redirect('purchase_request:detallupurchaserequest', id = id )
+
+
+    context = {
+        "form" : form,
+        "asaun" : "rejeita",
+        "dados" : dados ,
+        "pajina_purchase_request" : "active",
+            }
+    
+    
+    return render(request, 'purchase_request/purchase_request__actiondescription.html',context)
 
 
 

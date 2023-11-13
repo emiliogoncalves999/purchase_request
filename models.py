@@ -2,8 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from employee.models import Employee,EmployeeUser
 from custom.models import Unit, Level, Donor
+from contract.models import Contract
 from django.utils import timezone
 # Create your models here.
+from ckeditor.fields import RichTextField
 
 class ActiveManager(models.Manager):
     def get_queryset(self):
@@ -12,7 +14,7 @@ class ActiveManager(models.Manager):
 
 class RequestOrder(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, related_name="RequestOrderemployee")
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True, blank=True, related_name="RequestOrdercontract")
     donor = models.ForeignKey(Donor, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestOrderdonor")
     is_urgent = models.BooleanField(default=False, verbose_name = "Is Urgent?")
     routine = models.CharField(max_length=100, null=True, blank=True)
@@ -66,7 +68,6 @@ class ItemRequest(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
 
-
     def __str__(self):
         template = '{0.description}'
         return template.format(self)
@@ -85,10 +86,10 @@ class ItemRequest(models.Model):
 
 class RequestOrderAprove(models.Model):
     request_order = models.ForeignKey(RequestOrder, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestOrderAproverequestorder")
-    employeeuser = models.ForeignKey(EmployeeUser, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestOrderAproveuser")
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True, blank=False, related_name="RequestOrderAproveuser")
     status = models.CharField(choices=[('Review','Review'),('Acepted','Acepted'),('Rejected','Rejected')],max_length=30, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    
+    description = RichTextField(null=False, blank=False)
+
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="RequestOrderAprovecreatedby")
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="RequestOrderAproveupdatedby")

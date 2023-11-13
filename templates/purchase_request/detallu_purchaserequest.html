@@ -46,7 +46,7 @@
                                         </div>
                                         <div class="card-body">
                                        <legend>
-										<h5 class="card-header">Purchase Request  <a href="{% url 'purchase_request:additempurchase'  purchaserequest.id|encrypt_id_tag  %}" class="btn btn-primary btn-sm float-right ">  <i class="far fa-paper-plane"></i> Add Item</a></h5>
+										<h5 class="card-header">Purchase Request  <div class='float-right'><a href="{% url 'purchase_request:additempurchase'  purchaserequest.id|encrypt_id_tag  %}" class="btn btn-primary btn-sm ">  <i class=" fas fa-print"></i> Print Dokument</a> &nbsp; <a href="{% url 'purchase_request:additempurchase'  purchaserequest.id|encrypt_id_tag  %}" class="btn btn-primary btn-sm ">  <i class="far fa-paper-plane"></i> Add Item</a></div> </h5>
 
                                         
 									   </legend>
@@ -148,7 +148,7 @@
                               
 								
 
-			{% include 'timeline.html' %}
+			{% include 'purchase_request/timeline.html' %}
 									   </div>
 									  
                                         </div>

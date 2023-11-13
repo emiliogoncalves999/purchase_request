@@ -114,3 +114,35 @@ class ItemRequestForm(forms.ModelForm):
         self.fields['description'].widget.attrs['class'] = 'form-control'
         self.fields['item_description'].widget.attrs['class'] = 'form-control'
   
+
+
+class RequestOrderAproveForm(forms.ModelForm):
+    class Meta:
+        model = RequestOrderAprove
+        fields = ['description']
+
+    def __init__(self, *args, **kwargs):
+        super(RequestOrderAproveForm, self).__init__(*args, **kwargs)
+
+        # Create a form helper and specify the layout
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+
+  
+
+
+            Row(
+                Column('description', css_class='col-md-12'),
+            ),
+      
+
+            Div(
+                Button('cancel', 'Kansela', css_class='btn-secondary btn-sm', onclick="window.history.back();"),
+                Submit('post', 'Submete', css_class='btn-primary btn-sm'),
+                css_class='text-right',
+            ),
+        )
+
+
+        self.fields['description'].widget.attrs['class'] = 'form-control'
+     
